@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+:root {
+  --app-bg-from: #27031A;
+  --app-bg-via: #1A0111;
+  --app-bg-to: #2B041C;
+  --sidebar-bg: #1B0211;
+  --sidebar-border: #6B1143;
+  --card-bg: #2B041C;
+  --card-border: #8A1555;
+  --card-inner-bg: #1C0212;
+  --card-inner-border: #5E0D3C;
+  --primary: #E6007A;
+  --primary-hover: #C40068;
+  --primary-gradient-from: #E6007A;
+  --primary-gradient-to: #A80058;
+  --secondary-bg: #3D0A27;
+  --text-main: #FFF0F6;
+  --text-muted: #F8C8DC;
+  --text-accent: #FF80BF;
+}
+
+/* Helper theme classes that dynamically react to theme switches */
+.theme-card {
+  background-color: var(--card-bg);
+  border-color: var(--card-border);
+  color: var(--text-main);
+}
+
+.theme-card-inner {
+  background-color: var(--card-inner-bg);
+  border-color: var(--card-inner-border);
+  color: var(--text-main);
+}
+
+.theme-card-secondary {
+  background-color: var(--secondary-bg);
+  border-color: var(--card-inner-border);
+  color: var(--text-main);
+}
+
+.theme-input {
+  background-color: var(--card-inner-bg);
+  border-color: var(--card-inner-border);
+  color: var(--text-main);
+}
+
+.theme-btn-primary {
+  background: linear-gradient(to right, var(--primary-gradient-from), var(--primary-gradient-to));
+  color: #ffffff;
+}
+
+.theme-text-main {
+  color: var(--text-main);
+}
+
+.theme-text-muted {
+  color: var(--text-muted);
+}
+
+.theme-text-accent {
+  color: var(--text-accent);
+}
+
+.theme-border-accent {
+  border-color: var(--card-border);
+}
+
+.theme-border-inner {
+  border-color: var(--card-inner-border);
+}

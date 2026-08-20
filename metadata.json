@@ -1,0 +1,6 @@
+{
+  "name": "DevBloom Academy",
+  "description": "Personal Software Engineering Bootcamp Platform with AI Mentor, 3 Daily Tracks (Full-Stack, AI Engineering, DSA), Calendar Export, and Progress Analytics",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
