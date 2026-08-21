@@ -2,6 +2,8 @@
 
 > **An Interactive 180-Day Full-Stack, AI Engineering & Data Structures (DSA) Bootcamp Platform**
 
+🌐 **Live Web App**: [https://devbloom.onrender.com](https://devbloom.onrender.com)
+
 DevBloom Academy is a comprehensive, production-grade web platform designed to take developers from web foundations to building advanced Full-Stack AI applications and capstone engineering systems.
 
 ---
