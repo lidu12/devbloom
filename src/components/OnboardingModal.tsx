@@ -10,7 +10,7 @@ interface OnboardingModalProps {
 
 export const OnboardingModal: React.FC<OnboardingModalProps> = ({ user, onComplete }) => {
   const { currentTheme } = useTheme();
-  const [name, setName] = useState(user.name || 'Lidiya');
+  const [name, setName] = useState(user.name && user.name !== 'Lidiya' ? user.name : '');
   const [startDate, setStartDate] = useState(user.startDate || new Date().toISOString().split('T')[0]);
   const [dailyHours, setDailyHours] = useState(user.dailyStudyHours || 4);
   const [studyDays, setStudyDays] = useState(user.studyDaysPerWeek || 6);
@@ -23,7 +23,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ user, onComple
     const target = new Date(start.getTime() + 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
     onComplete({
-      name,
+      name: name.trim() || 'Student',
       startDate,
       dailyStudyHours: Number(dailyHours),
       studyDaysPerWeek: Number(studyDays),
@@ -81,6 +81,7 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ user, onComple
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                placeholder="Enter your name (e.g. Alex or Lidiya)"
                 required
                 className="w-full px-3.5 py-2.5 rounded-xl border font-medium focus:outline-none focus:ring-2 focus:ring-pink-500"
                 style={{

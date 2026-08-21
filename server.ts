@@ -55,7 +55,7 @@ function getInitialState() {
       {
         id: 'msg-1',
         sender: 'bloom',
-        text: `Welcome to DevBloom Academy, ${user.name}! 🌸 I am Bloom, your senior software engineering mentor. We are building real craftsmanship here—from web foundations to production AI agents and our capstone Blockchain Intelligence System. How can I guide your learning today?`,
+        text: `Welcome to DevBloom Academy, ${user.name || 'Student'}! 🌸 I am Bloom, your senior software engineering mentor. We are building real craftsmanship here—from web foundations to production AI agents and our capstone Blockchain Intelligence System. How can I guide your learning today?`,
         timestamp: new Date().toISOString(),
       },
     ],
@@ -67,25 +67,44 @@ function getInitialState() {
   };
 }
 
+import { loadStateFromSQL, saveStateToSQL } from './db.js';
+
 function loadStateFromFile() {
   try {
-    if (fs.existsSync(DB_FILE)) {
-      const raw = fs.readFileSync(DB_FILE, 'utf-8');
-      return JSON.parse(raw);
+    const sqlState = loadStateFromSQL();
+    if (sqlState && sqlState.user) {
+      return sqlState;
     }
   } catch (err) {
-    console.error('Error reading db.json:', err);
+    console.error('Error reading from SQL DB:', err);
   }
+
+  // Auto-migrate from legacy db.json if exists
+  if (fs.existsSync(DB_FILE)) {
+    try {
+      const raw = fs.readFileSync(DB_FILE, 'utf-8');
+      const legacyState = JSON.parse(raw);
+      if (legacyState && legacyState.user) {
+        saveStateToSQL(legacyState);
+        return legacyState;
+      }
+    } catch (err) {
+      console.error('Error reading legacy db.json:', err);
+    }
+  }
+
   const initialState = getInitialState();
-  saveStateToFile(initialState);
+  saveStateToSQL(initialState);
   return initialState;
 }
 
 function saveStateToFile(state: any) {
   try {
+    saveStateToSQL(state);
+    // Also save legacy db.json backup
     fs.writeFileSync(DB_FILE, JSON.stringify(state, null, 2), 'utf-8');
   } catch (err) {
-    console.error('Error writing to db.json:', err);
+    console.error('Error saving state to SQL DB:', err);
   }
 }
 

@@ -13,6 +13,7 @@ import { SettingsView } from './components/SettingsView';
 import { ThemePickerModal } from './components/ThemePickerModal';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { AppState, UserProfile, BootcampDay, TaskStatus } from './types';
+import { generateInitialDays } from './data/curriculumData';
 
 function AppContent() {
   const { currentTheme } = useTheme();
@@ -21,27 +22,51 @@ function AppContent() {
   const [selectedDayNumber, setSelectedDayNumber] = useState(1);
   const [bloomInitialMsg, setBloomInitialMsg] = useState<string | undefined>(undefined);
 
-  // Load app state from server API
+  // Load app state from localStorage first, then fallback to server API
   useEffect(() => {
+    const savedLocal = localStorage.getItem('devbloom_app_state');
+    if (savedLocal) {
+      try {
+        const parsed = JSON.parse(savedLocal);
+        if (parsed && parsed.user) {
+          if (parsed.user.name === 'Lidiya' || !parsed.user.name) {
+            parsed.user.isOnboarded = false;
+            parsed.user.name = '';
+          }
+          setAppState(parsed);
+          setSelectedDayNumber(parsed.user.currentDayNumber || 1);
+          return;
+        }
+      } catch (e) {
+        console.error('Error parsing local app state:', e);
+      }
+    }
+
     fetch('/api/state')
       .then((res) => res.json())
       .then((data) => {
         if (data && data.user) {
           setAppState(data);
           setSelectedDayNumber(data.user.currentDayNumber || 1);
+          localStorage.setItem('devbloom_app_state', JSON.stringify(data));
         }
       })
       .catch((err) => console.error('Error fetching state:', err));
   }, []);
 
-  // Save app state helper
+  // Save app state helper to localStorage and backend
   const syncStateToServer = (newState: AppState) => {
     setAppState(newState);
+    try {
+      localStorage.setItem('devbloom_app_state', JSON.stringify(newState));
+    } catch (e) {
+      console.error('Error saving to localStorage:', e);
+    }
     fetch('/api/state', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newState),
-    }).catch((err) => console.error('Error saving state:', err));
+    }).catch((err) => console.error('Error saving state to server:', err));
   };
 
   if (!appState) {
@@ -74,10 +99,18 @@ function AppContent() {
 
   // Onboarding Complete Handler
   const handleOnboardingComplete = (updatedUser: Partial<UserProfile>) => {
-    const newFields = { ...user, ...updatedUser, isOnboarded: true };
+    const userName = updatedUser.name && updatedUser.name.trim() ? updatedUser.name.trim() : 'Student';
+    const newFields: UserProfile = {
+      ...user,
+      ...updatedUser,
+      name: userName,
+      isOnboarded: true,
+    };
+    const updatedDays = updatedUser.startDate ? generateInitialDays(updatedUser.startDate) : days;
     const newState: AppState = {
       ...appState,
       user: newFields,
+      days: updatedDays,
     };
     syncStateToServer(newState);
   };
@@ -234,11 +267,13 @@ function AppContent() {
 
   // Reset Data Handler
   const handleResetData = () => {
+    localStorage.removeItem('devbloom_app_state');
     fetch('/api/state/reset', { method: 'POST' })
       .then((res) => res.json())
       .then((data) => {
         setAppState(data);
         setSelectedDayNumber(1);
+        localStorage.setItem('devbloom_app_state', JSON.stringify(data));
       });
   };
 

@@ -1,7 +1,7 @@
 import { Phase, Project, SkillNode, ResourceItem, BootcampDay, UserProfile, WeeklyReview, MonthlyReview } from '../types';
 
 export const INITIAL_USER: UserProfile = {
-  name: 'Lidiya',
+  name: '',
   currentLevel: 1,
   levelTitle: 'Level 1: Web Foundations',
   startDate: new Date().toISOString().split('T')[0],
